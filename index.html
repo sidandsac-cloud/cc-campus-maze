@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Maze</title>
+<style>
+  :root {
+    --bg: #14171c;
+    --panel: #1e232b;
+    --line: #3a4048;
+    --text: #eef1f4;
+    --muted: #9aa4b0;
+    --accent: #4fc3ff;
+    --good: #2ecc71;
+    --bad: #e74c3c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+  }
+  header {
+    padding: 18px 16px 8px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 4px; font-size: 1.4rem; }
+  header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  #playerTag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  #playerTag button {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 0.78rem;
+  }
+  #playerTag button:hover { border-color: var(--accent); color: var(--accent); }
+  #clue {
+    margin: 10px auto;
+    width: min(90%, 700px);
+    min-height: 54px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    font-style: italic;
+    text-align: center;
+  }
+  #status { text-align: center; min-height: 20px; font-size: 0.9rem; margin-bottom: 6px; }
+  #status.ok { color: var(--good); }
+  #status.err { color: var(--bad); }
+  #boardWrap { display: flex; justify-content: center; }
+  canvas {
+    background: #0e1015;
+    border: 3px solid var(--line);
+    border-radius: 10px;
+    max-width: 95vw;
+    height: auto;
+  }
+  #overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 15, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  #overlay .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 28px 26px;
+    width: min(90%, 380px);
+    text-align: center;
+  }
+  #overlay input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #10131a;
+    color: var(--text);
+    font-size: 0.95rem;
+    margin: 10px 0;
+  }
+  #overlay button.primary {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #04141d;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="card">
+    <h2>Enter your team name</h2>
+    <p>Progress is saved remotely. Re-enter the same team name to resume.</p>
+    <input id="nameInput" type="text" placeholder="e.g. Team Falcon" maxlength="40" autocomplete="off">
+    <button class="primary" id="startBtn">Start</button>
+  </div>
+</div>
+
+<header>
+  <h1>Campus Maze</h1>
+  <p>Use arrow keys to visit the locations in the proper sequence.</p>
+  <div id="playerTag" class="hidden">
+    Playing as <strong id="playerName"></strong>
+    <button id="switchBtn">Switch team</button>
+  </div>
+</header>
+
+<div id="clue"><b>Loading clue…</b></div>
+<div id="status"></div>
+<div id="boardWrap">
+  <canvas id="cv" width="950" height="650"></canvas>
+</div>
+
+<script>
+// Supabase Project Credentials
+const SUPABASE_URL = "https://yrjiuskkrfhhzyxsfkah.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlyaml1c2trcmZoaHp5eHNma2FoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODYyOTMsImV4cCI6MjEwMjQ2MjI5M30.1uj0dBwSwYMvE3s3HdFJmxUAn2-Z9R-h2f8x0cuABsE";
+
+const canvas = document.getElementById("cv");
+const ctx = canvas.getContext("2d");
+const clueBox = document.getElementById("clue");
+const statusBox = document.getElementById("status");
+const overlay = document.getElementById("overlay");
+const playerTag = document.getElementById("playerTag");
+const playerNameEl = document.getElementById("playerName");
+
+const start = { x: 50, y: 325 };
+const player = { x: start.x, y: start.y, r: 10 };
+
+const bodies = [
+  { name: "SJA", x: 130, y: 120 },
+  { name: "Dean's Council", x: 470, y: 100 },
+  { name: "VC", x: 810, y: 140 },
+  { name: "Registrar", x: 220, y: 300 },
+  { name: "Academic Section", x: 700, y: 290 },
+  { name: "Exam Section", x: 130, y: 520 },
+  { name: "Student Grievance\nRedressal Committee", x: 470, y: 520 },
+  { name: "Undergraduate Council", x: 820, y: 510 },
+];
+
+let playerId = "";
+let completed = [];
+let finished = false;
+let busy = false;
+let lastTouched = null;
+
+function wrap(text, x, y) {
+  text.split("\n").forEach((l, i) => ctx.fillText(l, x, y + i * 16));
+}
+
+function draw() {
+  ctx.clearRect(0, 0, 950, 650);
+  ctx.strokeStyle = "#333a42";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(80, 325);
+  ctx.lineTo(250, 325);
+  ctx.lineTo(250, 160);
+  ctx.lineTo(600, 160);
+  ctx.lineTo(600, 420);
+  ctx.lineTo(850, 420);
+  ctx.stroke();
+
+  bodies.forEach(b => {
+    const cleanName = b.name.replace(/\n/g, " ");
+    ctx.fillStyle = completed.includes(cleanName) ? "#2ecc71" : "#454c56";
+    ctx.fillRect(b.x - 65, b.y - 30, 130, 60);
+    ctx.strokeStyle = "#fff";
+    ctx.strokeRect(b.x - 65, b.y - 30, 130, 60);
+    ctx.fillStyle = "#fff";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "center";
+    wrap(b.name, b.x, b.y - 4);
+  });
+
+  ctx.fillStyle = "#4fc3ff";
+  ctx.beginPath();
+  ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function setStatus(msg, kind) {
+  statusBox.textContent = msg;
+  statusBox.className = kind || "";
+}
+
+function showClue(text) {
+  clueBox.innerHTML = "<b>" + text + "</b>";
+}
+
+async function callDatabase(fnName, bodyData) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fnName}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`
+    },
+    body: JSON.stringify(bodyData)
+  });
+  if (!res.ok) throw new Error("API request failed");
+  return res.json();
+}
+
+async function loadState() {
+  try {
+    const data = await callDatabase("get_state", { p_id: playerId });
+    completed = data.completed || [];
+    finished = !!data.finished;
+    if (finished) {
+      showClue(data.finalClue);
+    } else {
+      showClue("Find the bodies in the right order. Wrong stop, back to the start.");
+    }
+    draw();
+  } catch (err) {
+    setStatus("Could not reach database. Check API credentials.", "err");
+  }
+}
+
+async function checkTouch(bodyName) {
+  if (busy || finished) return;
+  busy = true;
+  setStatus("Checking…");
+  const cleanBodyName = bodyName.replace(/\n/g, " ");
+  
+  try {
+    const data = await callDatabase("check_touch", { p_id: playerId, b_name: cleanBodyName });
+    if (data.status === "correct") {
+      completed.push(cleanBodyName);
+      setStatus("Correct — keep going.", "ok");
+    } else if (data.status === "finished") {
+      completed.push(cleanBodyName);
+      finished = true;
+      showClue(data.finalClue);
+      setStatus("Maze complete!", "ok");
+    } else if (data.status === "wrong") {
+      completed = [];
+      player.x = start.x;
+      player.y = start.y;
+      setStatus("Wrong stop — back to the start.", "err");
+    }
+    draw();
+  } catch (err) {
+    setStatus("Network error — try again.", "err");
+  } finally {
+    busy = false;
+  }
+}
+
+function checkOverlap() {
+  let touching = null;
+  for (const b of bodies) {
+    if (Math.abs(player.x - b.x) < 55 && Math.abs(player.y - b.y) < 30) {
+      touching = b.name;
+      break;
+    }
+  }
+  const cleanTouching = touching ? touching.replace(/\n/g, " ") : null;
+  if (touching && cleanTouching !== lastTouched && !completed.includes(cleanTouching)) {
+    lastTouched = cleanTouching;
+    checkTouch(touching);
+  }
+  if (!touching) lastTouched = null;
+}
+
+document.addEventListener("keydown", e => {
+  if (finished || !playerId) return;
+  const s = 8;
+  if (e.key === "ArrowUp") player.y -= s;
+  if (e.key === "ArrowDown") player.y += s;
+  if (e.key === "ArrowLeft") player.x -= s;
+  if (e.key === "ArrowRight") player.x += s;
+  player.x = Math.max(10, Math.min(940, player.x));
+  player.y = Math.max(10, Math.min(640, player.y));
+  draw();
+  checkOverlap();
+});
+
+document.getElementById("startBtn").addEventListener("click", async () => {
+  const name = document.getElementById("nameInput").value.trim();
+  if (!name) return;
+  playerId = name;
+  playerNameEl.textContent = name;
+  playerTag.classList.remove("hidden");
+  overlay.classList.add("hidden");
+  await loadState();
+});
+
+document.getElementById("switchBtn").addEventListener("click", () => {
+  playerId = "";
+  completed = [];
+  finished = false;
+  player.x = start.x;
+  player.y = start.y;
+  playerTag.classList.add("hidden");
+  document.getElementById("nameInput").value = "";
+  overlay.classList.remove("hidden");
+  draw();
+});
+
+draw();
+</script>
+</body>
+</html>
