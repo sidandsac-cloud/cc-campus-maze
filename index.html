@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Campus Maze</title>
+<title>NUJS Lightbulb Conundrum</title>
 <style>
   :root {
     --bg: #14171c;
@@ -20,20 +20,27 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    font-family: Garamond, "EB Garamond", Georgia, serif;
   }
   header {
     padding: 18px 16px 8px;
     text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
   }
-  header h1 { margin: 0 0 4px; font-size: 1.4rem; }
-  header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  header h1 { margin: 0 0 6px; font-size: 1.8rem; letter-spacing: 0.5px; }
+  header p.story { 
+    margin: 0 0 8px; 
+    color: var(--muted); 
+    font-size: 1.05rem; 
+    line-height: 1.4;
+  }
   #playerTag {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-top: 8px;
-    font-size: 0.85rem;
+    margin-top: 6px;
+    font-size: 0.95rem;
     color: var(--muted);
   }
   #playerTag button {
@@ -43,24 +50,26 @@
     border-radius: 6px;
     padding: 3px 8px;
     cursor: pointer;
-    font-size: 0.78rem;
+    font-family: Garamond, serif;
+    font-size: 0.85rem;
   }
   #playerTag button:hover { border-color: var(--accent); color: var(--accent); }
   #clue {
     margin: 10px auto;
-    width: min(90%, 700px);
-    min-height: 54px;
+    width: min(92%, 750px);
+    min-height: 75px;
     border: 1px dashed var(--line);
     border-radius: 8px;
     background: var(--panel);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 16px;
-    font-style: italic;
+    padding: 12px 18px;
+    font-size: 1.05rem;
+    line-height: 1.4;
     text-align: center;
   }
-  #status { text-align: center; min-height: 20px; font-size: 0.9rem; margin-bottom: 6px; }
+  #status { text-align: center; min-height: 22px; font-size: 1rem; margin-bottom: 6px; }
   #status.ok { color: var(--good); }
   #status.err { color: var(--bad); }
   #boardWrap { display: flex; justify-content: center; }
@@ -74,7 +83,7 @@
   #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(10, 12, 15, 0.92);
+    background: rgba(10, 12, 15, 0.94);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -85,9 +94,11 @@
     border: 1px solid var(--line);
     border-radius: 12px;
     padding: 28px 26px;
-    width: min(90%, 380px);
+    width: min(90%, 420px);
     text-align: center;
   }
+  #overlay h2 { margin-top: 0; font-size: 1.6rem; }
+  #overlay p { color: var(--muted); font-size: 1rem; line-height: 1.4; }
   #overlay input {
     width: 100%;
     padding: 10px 12px;
@@ -95,8 +106,9 @@
     border: 1px solid var(--line);
     background: #10131a;
     color: var(--text);
-    font-size: 0.95rem;
-    margin: 10px 0;
+    font-size: 1rem;
+    font-family: Garamond, serif;
+    margin: 14px 0;
   }
   #overlay button.primary {
     width: 100%;
@@ -105,7 +117,9 @@
     border: none;
     background: var(--accent);
     color: #04141d;
+    font-size: 1.1rem;
     font-weight: 600;
+    font-family: Garamond, serif;
     cursor: pointer;
   }
   .hidden { display: none !important; }
@@ -115,16 +129,16 @@
 
 <div id="overlay">
   <div class="card">
-    <h2>Enter your team name</h2>
-    <p>Progress is saved remotely. Re-enter the same team name to resume.</p>
+    <h2>Enter Team Name</h2>
+    <p>How many committees does it take in NUJS to change a light bulb? Follow the average Noojie trying to solve a simple non-working light bulb grievance. Use the clues to navigate the administrative maze!</p>
     <input id="nameInput" type="text" placeholder="e.g. Team Falcon" maxlength="40" autocomplete="off">
-    <button class="primary" id="startBtn">Start</button>
+    <button class="primary" id="startBtn">Begin Journey</button>
   </div>
 </div>
 
 <header>
-  <h1>Campus Maze</h1>
-  <p>Use arrow keys to visit the locations in the proper sequence.</p>
+  <h1>The NUJS Lightbulb Conundrum</h1>
+  <p class="story">How many committees does it take in NUJS to change a light bulb? Follow an average Noojie trying to solve a light bulb grievance through the average administrative journey. Use the clues to find the correct set of steps!</p>
   <div id="playerTag" class="hidden">
     Playing as <strong id="playerName"></strong>
     <button id="switchBtn">Switch team</button>
@@ -134,13 +148,25 @@
 <div id="clue"><b>Loading clue…</b></div>
 <div id="status"></div>
 <div id="boardWrap">
-  <canvas id="cv" width="950" height="650"></canvas>
+  <canvas id="cv" width="950" height="600"></canvas>
 </div>
 
 <script>
-// Supabase Project Credentials
+// Supabase Credentials
 const SUPABASE_URL = "https://yrjiuskkrfhhzyxsfkah.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlyaml1c2trcmZoaHp5eHNma2FoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODYyOTMsImV4cCI6MjEwMjQ2MjI5M30.1uj0dBwSwYMvE3s3HdFJmxUAn2-Z9R-h2f8x0cuABsE";
+
+// 3-Line Placeholder Clues for each of the 8 steps
+const CLUES = [
+  "<b>Clue 1:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 2:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 3:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 4:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 5:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 6:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 7:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
+  "<b>Clue 8:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here."
+];
 
 const canvas = document.getElementById("cv");
 const ctx = canvas.getContext("2d");
@@ -150,18 +176,31 @@ const overlay = document.getElementById("overlay");
 const playerTag = document.getElementById("playerTag");
 const playerNameEl = document.getElementById("playerName");
 
-const start = { x: 50, y: 325 };
+const start = { x: 40, y: 280 };
 const player = { x: start.x, y: start.y, r: 10 };
 
+// 13 Blocks total (8 sequence steps + 5 red herrings)
 const bodies = [
-  { name: "SJA", x: 130, y: 120 },
-  { name: "Dean's Council", x: 470, y: 100 },
-  { name: "VC", x: 810, y: 140 },
-  { name: "Registrar", x: 220, y: 300 },
-  { name: "Academic Section", x: 700, y: 290 },
-  { name: "Exam Section", x: 130, y: 520 },
-  { name: "Student Grievance\nRedressal Committee", x: 470, y: 520 },
-  { name: "Undergraduate Council", x: 820, y: 510 },
+  // Row 1
+  { name: "SJA", x: 130, y: 90 },
+  { name: "Executive Council", x: 360, y: 90 },
+  { name: "Dean's Council", x: 590, y: 90 },
+  { name: "VC", x: 820, y: 90 },
+  
+  // Row 2
+  { name: "Registrar", x: 130, y: 230 },
+  { name: "Finance Council", x: 360, y: 230 },
+  { name: "Academic Section", x: 590, y: 230 },
+  { name: "Academic Council", x: 820, y: 230 },
+
+  // Row 3
+  { name: "Exam Section", x: 130, y: 370 },
+  { name: "Student Grievance\nRedressal Committee", x: 360, y: 370 },
+  { name: "Undergraduate Council", x: 590, y: 370 },
+  { name: "Writ Petition to\nCalcutta High Court", x: 820, y: 370 },
+
+  // Row 4 (Center Red Herring)
+  { name: "Campus Group", x: 475, y: 510 }
 ];
 
 let playerId = "";
@@ -171,38 +210,54 @@ let busy = false;
 let lastTouched = null;
 
 function wrap(text, x, y) {
-  text.split("\n").forEach((l, i) => ctx.fillText(l, x, y + i * 16));
+  const lines = text.split("\n");
+  const lineGap = 16;
+  const startY = y - ((lines.length - 1) * lineGap) / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineGap));
 }
 
 function draw() {
-  ctx.clearRect(0, 0, 950, 650);
-  ctx.strokeStyle = "#333a42";
-  ctx.lineWidth = 5;
+  ctx.clearRect(0, 0, 950, 600);
+
+  // Grid Lines
+  ctx.strokeStyle = "#252b33";
+  ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(80, 325);
-  ctx.lineTo(250, 325);
-  ctx.lineTo(250, 160);
-  ctx.lineTo(600, 160);
-  ctx.lineTo(600, 420);
-  ctx.lineTo(850, 420);
+  ctx.moveTo(130, 90); ctx.lineTo(820, 90);
+  ctx.moveTo(130, 230); ctx.lineTo(820, 230);
+  ctx.moveTo(130, 370); ctx.lineTo(820, 370);
+  ctx.moveTo(130, 90); ctx.lineTo(130, 370);
+  ctx.moveTo(820, 90); ctx.lineTo(820, 370);
+  ctx.moveTo(475, 370); ctx.lineTo(475, 510);
   ctx.stroke();
 
+  // Render locations
   bodies.forEach(b => {
     const cleanName = b.name.replace(/\n/g, " ");
-    ctx.fillStyle = completed.includes(cleanName) ? "#2ecc71" : "#454c56";
-    ctx.fillRect(b.x - 65, b.y - 30, 130, 60);
-    ctx.strokeStyle = "#fff";
-    ctx.strokeRect(b.x - 65, b.y - 30, 130, 60);
-    ctx.fillStyle = "#fff";
-    ctx.font = "14px Arial";
+    const boxW = 150;
+    const boxH = 65;
+
+    ctx.fillStyle = completed.includes(cleanName) ? "#2ecc71" : "#282e38";
+    ctx.fillRect(b.x - boxW/2, b.y - boxH/2, boxW, boxH);
+    ctx.strokeStyle = completed.includes(cleanName) ? "#27ae60" : "#454c56";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x - boxW/2, b.y - boxH/2, boxW, boxH);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 13px Garamond, serif";
     ctx.textAlign = "center";
-    wrap(b.name, b.x, b.y - 4);
+    ctx.textBaseline = "middle";
+    wrap(b.name, b.x, b.y);
   });
 
+  // Render player dot
   ctx.fillStyle = "#4fc3ff";
   ctx.beginPath();
   ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
   ctx.fill();
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 }
 
 function setStatus(msg, kind) {
@@ -210,8 +265,14 @@ function setStatus(msg, kind) {
   statusBox.className = kind || "";
 }
 
-function showClue(text) {
-  clueBox.innerHTML = "<b>" + text + "</b>";
+function updateClueDisplay(prog) {
+  if (finished) {
+    clueBox.innerHTML = "<b>Sorry, you've graduated without a convocation and not having been able to have changed the light bulb.</b>";
+  } else if (prog >= 0 && prog < CLUES.length) {
+    clueBox.innerHTML = CLUES[prog];
+  } else {
+    clueBox.innerHTML = "<b>Use arrow keys to visit the locations in the correct sequence.</b>";
+  }
 }
 
 async function callDatabase(fnName, bodyData) {
@@ -233,11 +294,7 @@ async function loadState() {
     const data = await callDatabase("get_state", { p_id: playerId });
     completed = data.completed || [];
     finished = !!data.finished;
-    if (finished) {
-      showClue(data.finalClue);
-    } else {
-      showClue("Find the bodies in the right order. Wrong stop, back to the start.");
-    }
+    updateClueDisplay(data.progress || 0);
     draw();
   } catch (err) {
     setStatus("Could not reach database. Check API credentials.", "err");
@@ -254,17 +311,19 @@ async function checkTouch(bodyName) {
     const data = await callDatabase("check_touch", { p_id: playerId, b_name: cleanBodyName });
     if (data.status === "correct") {
       completed.push(cleanBodyName);
-      setStatus("Correct — keep going.", "ok");
+      setStatus("Correct step — keep following the clues.", "ok");
+      updateClueDisplay(data.progress);
     } else if (data.status === "finished") {
       completed.push(cleanBodyName);
       finished = true;
-      showClue(data.finalClue);
-      setStatus("Maze complete!", "ok");
+      setStatus("Maze completed!", "ok");
+      updateClueDisplay(8);
     } else if (data.status === "wrong") {
       completed = [];
       player.x = start.x;
       player.y = start.y;
-      setStatus("Wrong stop — back to the start.", "err");
+      setStatus("Wrong stop! Redirection reset — back to the start.", "err");
+      updateClueDisplay(0);
     }
     draw();
   } catch (err) {
@@ -276,8 +335,10 @@ async function checkTouch(bodyName) {
 
 function checkOverlap() {
   let touching = null;
+  const boxW = 150;
+  const boxH = 65;
   for (const b of bodies) {
-    if (Math.abs(player.x - b.x) < 55 && Math.abs(player.y - b.y) < 30) {
+    if (Math.abs(player.x - b.x) < boxW/2 && Math.abs(player.y - b.y) < boxH/2) {
       touching = b.name;
       break;
     }
@@ -298,7 +359,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") player.x -= s;
   if (e.key === "ArrowRight") player.x += s;
   player.x = Math.max(10, Math.min(940, player.x));
-  player.y = Math.max(10, Math.min(640, player.y));
+  player.y = Math.max(10, Math.min(590, player.y));
   draw();
   checkOverlap();
 });
