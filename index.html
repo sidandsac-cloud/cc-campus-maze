@@ -13,7 +13,7 @@
     --line: #323845;
     --text: #f0f3f7;
     --muted: #a0aab8;
-    --accent: #e2b857;
+    --accent: #d6a2e8; /* Soft purple theme */
     --good: #2ecc71;
     --bad: #e74c3c;
   }
@@ -248,34 +248,34 @@ const playerNameEl = document.getElementById("playerName");
 const start = { x: 40, y: 310 };
 const player = { x: start.x, y: start.y };
 
-// Full Grid Layout (15 Bodies total)
+// Scrambled non-linear Grid Layout
 const allBodies = [
-  // Row 1
-  { name: "Undergraduate\nCouncil", x: 110, y: 110 },
-  { name: "Academic\nCouncil", x: 290, y: 110 },
-  { name: "Registrar", x: 475, y: 110 },
-  { name: "Equivalence\nCommittee", x: 660, y: 110 },
-  { name: "SJA", x: 840, y: 110 },
+  // Row 1 (y = 120)
+  { name: "Executive\nCouncil", x: 110, y: 120 },
+  { name: "Finance\nCouncil", x: 290, y: 120 },
+  { name: "Dean's Council", x: 475, y: 120 },      // Step 7
+  { name: "SJA", x: 660, y: 120 },                 // Step 5
+  { name: "Registrar", x: 840, y: 120 },           // Step 3
 
-  // Row 2
-  { name: "Vice-Chancellor", x: 110, y: 270 },
-  { name: "Dean's Council", x: 290, y: 270 },
-  { name: "Executive\nCouncil", x: 475, y: 270 },
-  { name: "Finance\nCouncil", x: 660, y: 270 },
-  { name: "Curriculum\nReview Board", x: 840, y: 270 },
+  // Row 2 (y = 310)
+  { name: "Curriculum\nCommittee", x: 110, y: 310 },
+  { name: "Equivalence\nCommittee", x: 290, y: 310 },// Step 4
+  { name: "Result Moderation\nCommittee", x: 475, y: 310 },
+  { name: "Vice-Chancellor", x: 660, y: 310 },     // Step 6
+  { name: "Question Paper\nModeration Committee", x: 840, y: 310 },
 
-  // Row 3
-  { name: "Curriculum\nCommittee", x: 110, y: 430 },
-  { name: "Question Paper\nModeration Committee", x: 290, y: 430 },
-  { name: "Result Moderation\nCommittee", x: 475, y: 430 },
-  { name: "Writ Petition to\nCalcutta High Court", x: 660, y: 430 },
-  { name: "Campus Group", x: 840, y: 430 }
+  // Row 3 (y = 500)
+  { name: "Curriculum\nReview Board", x: 110, y: 500 },
+  { name: "Writ Petition to\nCalcutta High Court", x: 290, y: 500 },
+  { name: "Academic\nCouncil", x: 475, y: 500 },  // Step 2
+  { name: "Campus Group", x: 660, y: 500 },
+  { name: "Undergraduate\nCouncil", x: 840, y: 500 } // Step 1
 ];
 
-// Sisyphean Special Grid Layout (VC and Dean's Council only)
+// Sisyphean Special Grid Layout (VC and Dean's Council far apart)
 const sisypheanBodies = [
-  { name: "Vice-Chancellor", x: 280, y: 310 },
-  { name: "Dean's Council", x: 670, y: 310 }
+  { name: "Vice-Chancellor", x: 200, y: 310 },
+  { name: "Dean's Council", x: 750, y: 310 }
 ];
 
 let playerId = "";
@@ -300,19 +300,25 @@ function draw() {
   ctx.clearRect(0, 0, 950, 650);
   const activeList = getActiveBodies();
 
-  // Connectors
-  ctx.strokeStyle = "#252b33";
-  ctx.lineWidth = 4;
+  // Draw Web Connectors
+  ctx.strokeStyle = "#232832";
+  ctx.lineWidth = 3;
   ctx.beginPath();
   if (currentProgress >= 6 && !finished) {
-    ctx.moveTo(280, 310);
-    ctx.lineTo(670, 310);
+    ctx.moveTo(200, 310);
+    ctx.lineTo(750, 310);
   } else {
-    ctx.moveTo(110, 110); ctx.lineTo(840, 110);
-    ctx.moveTo(110, 270); ctx.lineTo(840, 270);
-    ctx.moveTo(110, 430); ctx.lineTo(840, 430);
-    ctx.moveTo(110, 110); ctx.lineTo(110, 430);
-    ctx.moveTo(840, 110); ctx.lineTo(840, 430);
+    // Horizontal maze lines
+    ctx.moveTo(110, 120); ctx.lineTo(840, 120);
+    ctx.moveTo(110, 310); ctx.lineTo(840, 310);
+    ctx.moveTo(110, 500); ctx.lineTo(840, 500);
+    // Vertical maze lines
+    ctx.moveTo(110, 120); ctx.lineTo(110, 500);
+    ctx.moveTo(475, 120); ctx.lineTo(475, 500);
+    ctx.moveTo(840, 120); ctx.lineTo(840, 500);
+    // Diagonal cross lines to make navigation feel complex
+    ctx.moveTo(290, 120); ctx.lineTo(660, 500);
+    ctx.moveTo(660, 120); ctx.lineTo(290, 500);
   }
   ctx.stroke();
 
@@ -336,14 +342,56 @@ function draw() {
     wrap(b.name, b.x, b.y);
   });
 
-  // Render Player Dot
-  ctx.fillStyle = "#e2b857";
+  // Render "Confused Noojie" Purple Avatar
+  const pr = 13; // Avatar radius
+  ctx.save();
+  
+  // Soft purple glow around noojie
+  ctx.shadowColor = "#d6a2e8";
+  ctx.shadowBlur = 10;
+
+  // Purple Body Circle
+  ctx.fillStyle = "#8e44ad";
   ctx.beginPath();
-  ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
+  ctx.arc(player.x, player.y, pr, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#ffffff";
+
+  ctx.strokeStyle = "#d6a2e8";
   ctx.lineWidth = 2;
   ctx.stroke();
+  ctx.restore();
+
+  // Confused face expressions on Noojie
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 1.5;
+
+  // Left Eye ('X')
+  ctx.beginPath();
+  ctx.moveTo(player.x - 6, player.y - 4);
+  ctx.lineTo(player.x - 2, player.y);
+  ctx.moveTo(player.x - 2, player.y - 4);
+  ctx.lineTo(player.x - 6, player.y);
+  ctx.stroke();
+
+  // Right Eye ('X')
+  ctx.beginPath();
+  ctx.moveTo(player.x + 2, player.y - 4);
+  ctx.lineTo(player.x + 6, player.y);
+  ctx.moveTo(player.x + 6, player.y - 4);
+  ctx.lineTo(player.x + 2, player.y);
+  ctx.stroke();
+
+  // Squiggly Confused Mouth
+  ctx.beginPath();
+  ctx.moveTo(player.x - 5, player.y + 4);
+  ctx.quadraticCurveTo(player.x, player.y + 7, player.x + 5, player.y + 4);
+  ctx.stroke();
+
+  // Small floating Title above avatar
+  ctx.fillStyle = "#d6a2e8";
+  ctx.font = "italic bold 12px 'EB Garamond', Garamond, serif";
+  ctx.textAlign = "center";
+  ctx.fillText("confused noojie", player.x, player.y - 18);
 }
 
 function setStatus(msg, kind) {
