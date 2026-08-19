@@ -133,7 +133,7 @@
     border: 1px solid var(--line);
     border-radius: 14px;
     padding: 36px 32px;
-    width: min(90%, 520px);
+    width: min(90%, 540px);
     text-align: center;
     box-shadow: 0 14px 36px rgba(0,0,0,0.75);
   }
@@ -147,12 +147,33 @@
   #overlay .prompt-box {
     text-align: left;
     background: #11141a;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 16px 20px;
+    border: 2px dashed var(--accent);
+    border-radius: 10px;
+    padding: 18px 20px;
     margin: 18px 0;
     font-size: 1.2rem;
-    line-height: 1.5;
+    line-height: 1.55;
+  }
+
+  #overlay .prompt-header {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  #overlay .prompt-footer {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    font-size: 0.98rem;
+    color: var(--muted);
+    font-style: italic;
   }
 
   #overlay input {
@@ -268,8 +289,12 @@
   <div class="card">
     <h2>Campus Maze</h2>
     <div class="prompt-box">
+      <div class="prompt-header">⚠️ Essential Clue — Read Carefully</div>
       <b>Q:</b> How many committees does it take to change a light bulb in NUJS?<br>
       <b>Ans:</b> the academic council's regulations on 5/5/2023 decided the answer to that question
+      <div class="prompt-footer">
+        📌 Pay close attention to this question and answer — it is crucial for solving the puzzle!
+      </div>
     </div>
     <p style="color: var(--muted); font-size: 1.1rem;">Enter team name to begin or resume progress:</p>
     <input id="nameInput" type="text" placeholder="e.g. Team Alpha" maxlength="40" autocomplete="off">
@@ -315,7 +340,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const CLUES = [
   "<b>Clue 1:</b><br>Two days for the messenger to carry your plea,<br>Seven days before the Council can disagree,<br>Fourteen till they finally answer thee,<br>But before beginning, there must be three,<br>A simple vote may set you free,<br>Five days later, in writing, you shall see.",
   "<b>Clue 2:</b><br>At the <i>eleventh</i> hour, two courses appear,<br>One must be taken, the other may be one you desire,<br>Yet before you go down either, the Council must agree,<br>In times of moderation or emergency, they play referee.",
-  "<b>Clue 3:</b><br>A <i>king</i> does not always sit on the throne.",
+  "<b>Clue 3:</b><br>A <i>king</i> does not sit on the throne.",
   "<b>Clue 4:</b><br>Sabhi SWAYAM, Sabhi samaan.",
   "<b>Clue 5:</b><br>They may ask for four to be exempt, so you can compete,<br>A day without their mention would be a very rare feat.",
   "<b>Clue 6:</b><br>Seventy or sixty-five, we all wait anxiously,<br>But alas, there is one attendance percentage we never see.",
