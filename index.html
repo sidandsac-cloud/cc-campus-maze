@@ -290,7 +290,7 @@
 
 <script>
 const SUPABASE_URL = "https://yrjiuskkrfhhzyxsfkah.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlyaml1c2trrfhhzyxsfkahIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODYyOTMsImV4cCI6MjEwMjQ2MjI5M30.1uj0dBwSwYMvE3s3HdFJmxUAn2-Z9R-h2f8x0cuABsE";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlyaml1c2trcmZoaHp5eHNma2FoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODYyOTMsImV4cCI6MjEwMjQ2MjI5M30.1uj0dBwSwYMvE3s3HdFJmxUAn2-Z9R-h2f8x0cuABsE";
 
 const CLUES = [
   "<b>Clue 1:</b><br>Two days for the messenger to carry your plea,<br>Seven days before the Council can disagree,<br>Fourteen till they finally answer thee,<br>But before beginning, there must be three,<br>A simple vote may set you free,<br>Five days later, in writing, you shall see.",
@@ -483,7 +483,7 @@ async function loadState() {
     updateClueDisplay();
     draw();
   } catch (err) {
-    setStatus("API Error: " + err.message, "err");
+    setStatus("API Connection Failed: " + err.message, "err");
   }
 }
 
