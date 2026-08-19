@@ -241,6 +241,24 @@
     margin-bottom: 8px;
   }
 
+  #viewBoardBtn {
+    margin-top: 24px;
+    padding: 10px 20px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-family: 'EB Garamond', Garamond, serif;
+    transition: all 0.2s ease;
+  }
+
+  #viewBoardBtn:hover {
+    background: var(--accent);
+    color: #12151a;
+  }
+
   .hidden { display: none !important; }
 </style>
 </head>
@@ -266,6 +284,7 @@
     <div id="playerTag" class="hidden">
       Playing as <strong id="playerName"></strong>
       <button id="switchBtn">Switch team</button>
+      <button id="showKeyBtn" class="hidden">View Victory Key</button>
     </div>
   </header>
 
@@ -285,6 +304,7 @@
       <span>Key to next puzzle:</span>
       <strong style="color: var(--accent);">answer to next puzzle is the last committee</strong>
     </div>
+    <button id="viewBoardBtn">Return to solved maze</button>
   </div>
 </div>
 
@@ -294,8 +314,8 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const CLUES = [
   "<b>Clue 1:</b><br>Two days for the messenger to carry your plea,<br>Seven days before the Council can disagree,<br>Fourteen till they finally answer thee,<br>But before beginning, there must be three,<br>A simple vote may set you free,<br>Five days later, in writing, you shall see.",
-  "<b>Clue 2:</b><br>At the eleventh hour, two courses appear,<br>One must be taken, the other may be one you desire,<br>Yet before you go down either, the Council must agree,<br>In times of moderation or emergency, they play referee.",
-  "<b>Clue 3:</b><br>A king does not always sit on the throne.",
+  "<b>Clue 2:</b><br>At the <i>eleventh</i> hour, two courses appear,<br>One must be taken, the other may be one you desire,<br>Yet before you go down either, the Council must agree,<br>In times of moderation or emergency, they play referee.",
+  "<b>Clue 3:</b><br>A <i>king</i> does not always sit on the throne.",
   "<b>Clue 4:</b><br>Sabhi SWAYAM, Sabhi samaan.",
   "<b>Clue 5:</b><br>They may ask for four to be exempt, so you can compete,<br>A day without their mention would be a very rare feat.",
   "<b>Clue 6:</b><br>Seventy or sixty-five, we all wait anxiously,<br>But alas, there is one attendance percentage we never see.",
@@ -311,6 +331,7 @@ const mainContainer = document.getElementById("mainContainer");
 const successView = document.getElementById("successView");
 const playerTag = document.getElementById("playerTag");
 const playerNameEl = document.getElementById("playerName");
+const showKeyBtn = document.getElementById("showKeyBtn");
 
 const start = { x: 40, y: 400 };
 const player = { x: start.x, y: start.y };
@@ -343,6 +364,7 @@ const sisypheanBodies = [
 let playerId = "";
 let completed = [];
 let finished = false;
+let viewingBoard = false;
 let currentProgress = 0;
 let busy = false;
 let lastTouched = null;
@@ -362,7 +384,7 @@ function getActiveBodies() {
 }
 
 function draw() {
-  if (finished) return;
+  if (finished && !viewingBoard) return;
   ctx.clearRect(0, 0, 1200, 800);
   const activeList = getActiveBodies();
 
@@ -446,12 +468,20 @@ function setStatus(msg, kind) {
 
 function updateClueDisplay() {
   if (finished) {
+    showKeyBtn.classList.remove("hidden");
+  } else {
+    showKeyBtn.classList.add("hidden");
+  }
+
+  if (finished && !viewingBoard) {
     mainContainer.classList.add("hidden");
     successView.classList.remove("hidden");
   } else {
     mainContainer.classList.remove("hidden");
     successView.classList.add("hidden");
-    if (currentProgress >= 6) {
+    if (finished) {
+      clueBox.innerHTML = "<b>Maze Complete!</b><br>You have successfully solved the full sequence.";
+    } else if (currentProgress >= 6) {
       clueBox.innerHTML = CLUES[6];
     } else if (currentProgress >= 0 && currentProgress < CLUES.length) {
       clueBox.innerHTML = CLUES[currentProgress];
@@ -480,6 +510,7 @@ async function callDatabase(fnName, bodyData) {
 async function triggerFrontend30MinReset(timerKey) {
   completed = [];
   finished = false;
+  viewingBoard = false;
   currentProgress = 0;
   player.x = start.x;
   player.y = start.y;
@@ -624,6 +655,7 @@ document.getElementById("switchBtn").addEventListener("click", () => {
   playerId = "";
   completed = [];
   finished = false;
+  viewingBoard = false;
   currentProgress = 0;
   player.x = start.x;
   player.y = start.y;
@@ -633,6 +665,17 @@ document.getElementById("switchBtn").addEventListener("click", () => {
   mainContainer.classList.remove("hidden");
   successView.classList.add("hidden");
   draw();
+});
+
+document.getElementById("viewBoardBtn").addEventListener("click", () => {
+  viewingBoard = true;
+  updateClueDisplay();
+  draw();
+});
+
+showKeyBtn.addEventListener("click", () => {
+  viewingBoard = false;
+  updateClueDisplay();
 });
 
 document.fonts.ready.then(() => draw());
