@@ -336,8 +336,8 @@ const allBodies = [
 ];
 
 const sisypheanBodies = [
-  { name: "Vice-Chancellor", x: 280, y: 400 },
-  { name: "Dean's Council", x: 920, y: 400 }
+  { name: "Dean's Council", x: 600, y: 150 },
+  { name: "Vice-Chancellor", x: 820, y: 400 }
 ];
 
 let playerId = "";
@@ -367,8 +367,8 @@ function draw() {
   ctx.lineWidth = 3;
   ctx.beginPath();
   if (currentProgress >= 7 && !finished) {
-    ctx.moveTo(280, 400);
-    ctx.lineTo(920, 400);
+    ctx.moveTo(600, 150);
+    ctx.lineTo(820, 400);
   } else {
     ctx.moveTo(140, 150); ctx.lineTo(1060, 150);
     ctx.moveTo(140, 400); ctx.lineTo(1060, 400);
