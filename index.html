@@ -347,6 +347,9 @@ let currentProgress = 0;
 let busy = false;
 let lastTouched = null;
 
+const RESET_INTERVAL_MS = 30 * 60 * 1000;
+let autoResetTimer = null;
+
 function wrap(text, x, y) {
   const lines = text.split("\n");
   const lineGap = 18;
@@ -474,14 +477,55 @@ async function callDatabase(fnName, bodyData) {
   return res.json();
 }
 
+async function triggerFrontend30MinReset(timerKey) {
+  completed = [];
+  finished = false;
+  currentProgress = 0;
+  player.x = start.x;
+  player.y = start.y;
+  localStorage.setItem(timerKey, Date.now().toString());
+
+  // Intentionally sends a non-existent node name to Supabase.
+  // The backend check_touch procedure evaluates this invalid move as 'wrong',
+  // automatically resetting team progress to 0 on Supabase without DB function changes.
+  try {
+    await callDatabase("check_touch", { p_id: playerId, b_name: "__30MIN_TIMER_RESET_TRIGGER__" });
+  } catch (err) {
+    console.warn("Front-end reset trigger warning:", err);
+  }
+
+  setStatus("30 minutes elapsed! Team progress reset.", "err");
+  updateClueDisplay();
+  draw();
+}
+
+function scheduleResetTimer(timerKey, delayMs) {
+  if (autoResetTimer) clearTimeout(autoResetTimer);
+  autoResetTimer = setTimeout(async () => {
+    await triggerFrontend30MinReset(timerKey);
+    scheduleResetTimer(timerKey, RESET_INTERVAL_MS);
+  }, delayMs);
+}
+
 async function loadState() {
   try {
-    const data = await callDatabase("get_state", { p_id: playerId });
-    completed = data.completed || [];
-    finished = !!data.finished;
-    currentProgress = data.progress || 0;
-    updateClueDisplay();
-    draw();
+    const timerKey = "maze_timer_" + playerId;
+    const lastStartTime = parseInt(localStorage.getItem(timerKey) || "0", 10);
+    const now = Date.now();
+    const elapsed = now - lastStartTime;
+
+    if (!lastStartTime || elapsed >= RESET_INTERVAL_MS) {
+      await triggerFrontend30MinReset(timerKey);
+      scheduleResetTimer(timerKey, RESET_INTERVAL_MS);
+    } else {
+      const data = await callDatabase("get_state", { p_id: playerId });
+      completed = data.completed || [];
+      finished = !!data.finished;
+      currentProgress = data.progress || 0;
+      scheduleResetTimer(timerKey, RESET_INTERVAL_MS - elapsed);
+      updateClueDisplay();
+      draw();
+    }
   } catch (err) {
     setStatus("API Connection Failed: " + err.message, "err");
   }
@@ -579,6 +623,7 @@ document.getElementById("startBtn").addEventListener("click", async () => {
 });
 
 document.getElementById("switchBtn").addEventListener("click", () => {
+  if (autoResetTimer) clearTimeout(autoResetTimer);
   playerId = "";
   completed = [];
   finished = false;
