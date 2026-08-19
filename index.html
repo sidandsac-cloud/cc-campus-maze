@@ -190,7 +190,6 @@
     opacity: 0.9;
   }
 
-  /* Full Page Success View */
   #successView {
     position: fixed;
     inset: 0;
@@ -316,31 +315,26 @@ const playerNameEl = document.getElementById("playerName");
 const start = { x: 40, y: 400 };
 const player = { x: start.x, y: start.y };
 
-// Expanded Spaced-out Grid (1200x800 Canvas)
 const allBodies = [
-  // Row 1 (y = 150)
   { name: "Executive\nCouncil", x: 140, y: 150 },
   { name: "Finance\nCouncil", x: 380, y: 150 },
-  { name: "Dean's Council", x: 600, y: 150 },      // Step 7
-  { name: "SJA", x: 820, y: 150 },                 // Step 5
-  { name: "Registrar", x: 1060, y: 150 },          // Step 3
+  { name: "Dean's Council", x: 600, y: 150 },
+  { name: "SJA", x: 820, y: 150 },
+  { name: "Registrar", x: 1060, y: 150 },
 
-  // Row 2 (y = 400)
   { name: "Curriculum\nCommittee", x: 140, y: 400 },
-  { name: "Equivalence\nCommittee", x: 380, y: 400 },// Step 4
+  { name: "Equivalence\nCommittee", x: 380, y: 400 },
   { name: "Result Moderation\nCommittee", x: 600, y: 400 },
-  { name: "Vice-Chancellor", x: 820, y: 400 },     // Step 6
+  { name: "Vice-Chancellor", x: 820, y: 400 },
   { name: "Question Paper\nModeration Committee", x: 1060, y: 400 },
 
-  // Row 3 (y = 650)
   { name: "Curriculum\nReview Board", x: 140, y: 650 },
   { name: "Writ Petition to\nCalcutta High Court", x: 380, y: 650 },
-  { name: "Academic\nCouncil", x: 600, y: 650 },  // Step 2
+  { name: "Academic\nCouncil", x: 600, y: 650 },
   { name: "Campus Group", x: 820, y: 650 },
-  { name: "Undergraduate\nCouncil", x: 1060, y: 650 } // Step 1
+  { name: "Undergraduate\nCouncil", x: 1060, y: 650 }
 ];
 
-// Sisyphean Special Grid Layout (VC and Dean's Council far apart)
 const sisypheanBodies = [
   { name: "Vice-Chancellor", x: 280, y: 400 },
   { name: "Dean's Council", x: 920, y: 400 }
@@ -360,7 +354,6 @@ function wrap(text, x, y) {
   lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineGap));
 }
 
-// Switches to VC + Dean's Council screen ONLY after Dean's Council is reached (currentProgress >= 7)
 function getActiveBodies() {
   return (currentProgress >= 7 && !finished) ? sisypheanBodies : allBodies;
 }
@@ -370,7 +363,6 @@ function draw() {
   ctx.clearRect(0, 0, 1200, 800);
   const activeList = getActiveBodies();
 
-  // Draw Web Connectors
   ctx.strokeStyle = "#232832";
   ctx.lineWidth = 3;
   ctx.beginPath();
@@ -378,21 +370,17 @@ function draw() {
     ctx.moveTo(280, 400);
     ctx.lineTo(920, 400);
   } else {
-    // Horizontal lines
     ctx.moveTo(140, 150); ctx.lineTo(1060, 150);
     ctx.moveTo(140, 400); ctx.lineTo(1060, 400);
     ctx.moveTo(140, 650); ctx.lineTo(1060, 650);
-    // Vertical lines
     ctx.moveTo(140, 150); ctx.lineTo(140, 650);
     ctx.moveTo(600, 150); ctx.lineTo(600, 650);
     ctx.moveTo(1060, 150); ctx.lineTo(1060, 650);
-    // Diagonals
     ctx.moveTo(380, 150); ctx.lineTo(820, 650);
     ctx.moveTo(820, 150); ctx.lineTo(380, 650);
   }
   ctx.stroke();
 
-  // Render Boxes
   activeList.forEach(b => {
     const cleanName = b.name.replace(/\n/g, " ");
     const boxW = 170;
@@ -412,13 +400,11 @@ function draw() {
     wrap(b.name, b.x, b.y);
   });
 
-  // Render "Confused Noojie" Purple Avatar
   const pr = 14;
   ctx.save();
   ctx.shadowColor = "#d6a2e8";
   ctx.shadowBlur = 12;
 
-  // Purple Body Circle
   ctx.fillStyle = "#8e44ad";
   ctx.beginPath();
   ctx.arc(player.x, player.y, pr, 0, Math.PI * 2);
@@ -429,11 +415,9 @@ function draw() {
   ctx.stroke();
   ctx.restore();
 
-  // Face details
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 1.5;
 
-  // Eyes ('X')
   ctx.beginPath();
   ctx.moveTo(player.x - 6, player.y - 4); ctx.lineTo(player.x - 2, player.y);
   ctx.moveTo(player.x - 2, player.y - 4); ctx.lineTo(player.x - 6, player.y);
@@ -441,13 +425,11 @@ function draw() {
   ctx.moveTo(player.x + 6, player.y - 4); ctx.lineTo(player.x + 2, player.y);
   ctx.stroke();
 
-  // Mouth
   ctx.beginPath();
   ctx.moveTo(player.x - 5, player.y + 4);
   ctx.quadraticCurveTo(player.x, player.y + 7, player.x + 5, player.y + 4);
   ctx.stroke();
 
-  // Title
   ctx.fillStyle = "#d6a2e8";
   ctx.font = "italic bold 13px 'EB Garamond', Garamond, serif";
   ctx.textAlign = "center";
@@ -484,7 +466,11 @@ async function callDatabase(fnName, bodyData) {
     },
     body: JSON.stringify(bodyData)
   });
-  if (!res.ok) throw new Error("API request failed");
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`HTTP ${res.status}: ${errorText || res.statusText}`);
+  }
   return res.json();
 }
 
@@ -497,7 +483,7 @@ async function loadState() {
     updateClueDisplay();
     draw();
   } catch (err) {
-    setStatus("Could not reach database. Check API credentials.", "err");
+    setStatus("API Error: " + err.message, "err");
   }
 }
 
@@ -529,7 +515,7 @@ async function checkTouch(bodyName) {
     }
     draw();
   } catch (err) {
-    setStatus("Network error — try again.", "err");
+    setStatus("API Error: " + err.message, "err");
   } finally {
     busy = false;
   }
@@ -574,6 +560,12 @@ document.addEventListener("keydown", e => {
   player.y = Math.max(10, Math.min(790, player.y));
   draw();
   checkOverlap();
+});
+
+document.getElementById("nameInput").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    document.getElementById("startBtn").click();
+  }
 });
 
 document.getElementById("startBtn").addEventListener("click", async () => {
