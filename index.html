@@ -13,7 +13,7 @@
     --line: #323845;
     --text: #f0f3f7;
     --muted: #a0aab8;
-    --accent: #d6a2e8; /* Soft purple theme */
+    --accent: #d6a2e8;
     --good: #2ecc71;
     --bad: #e74c3c;
   }
@@ -31,13 +31,13 @@
   header {
     padding: 18px 16px 6px;
     text-align: center;
-    max-width: 850px;
+    max-width: 950px;
     margin: 0 auto;
   }
 
   header h1 {
     margin: 0 0 4px;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     color: var(--accent);
@@ -46,7 +46,7 @@
   header p.subtitle {
     margin: 0;
     color: var(--muted);
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-style: italic;
   }
 
@@ -78,7 +78,7 @@
 
   #clue {
     margin: 12px auto;
-    width: min(92%, 820px);
+    width: min(95%, 1020px);
     min-height: 90px;
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -87,7 +87,7 @@
     align-items: center;
     justify-content: center;
     padding: 14px 20px;
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     line-height: 1.5;
     text-align: center;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
@@ -96,7 +96,7 @@
   #status {
     text-align: center;
     min-height: 24px;
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     margin-bottom: 6px;
   }
 
@@ -106,16 +106,16 @@
   #boardWrap {
     display: flex;
     justify-content: center;
-    padding-bottom: 20px;
+    padding-bottom: 25px;
   }
 
   canvas {
     background: #0b0d10;
     border: 2px solid var(--line);
-    border-radius: 10px;
-    max-width: 95vw;
+    border-radius: 12px;
+    max-width: 98vw;
     height: auto;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
 
   #overlay {
@@ -140,7 +140,7 @@
 
   #overlay h2 {
     margin-top: 0;
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: var(--accent);
   }
 
@@ -151,7 +151,7 @@
     border-radius: 8px;
     padding: 14px 18px;
     margin: 16px 0;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     line-height: 1.5;
   }
 
@@ -179,7 +179,7 @@
     border: none;
     background: var(--accent);
     color: #12151a;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 700;
     font-family: 'EB Garamond', Garamond, serif;
     cursor: pointer;
@@ -188,6 +188,58 @@
 
   #overlay button.primary:hover {
     opacity: 0.9;
+  }
+
+  /* Full Page Success View */
+  #successView {
+    position: fixed;
+    inset: 0;
+    background: #0b0d10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    padding: 20px;
+    text-align: center;
+  }
+
+  #successView .success-card {
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+    padding: 40px 30px;
+    max-width: 650px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(214, 162, 232, 0.2);
+  }
+
+  #successView h1 {
+    font-size: 2.5rem;
+    color: var(--good);
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+
+  #successView p.bulb-msg {
+    font-size: 1.4rem;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+
+  #successView .key-box {
+    background: #11141a;
+    border: 1px dashed var(--accent);
+    border-radius: 10px;
+    padding: 20px;
+    font-size: 1.35rem;
+  }
+
+  #successView .key-box span {
+    color: var(--muted);
+    font-size: 1.1rem;
+    display: block;
+    margin-bottom: 6px;
   }
 
   .hidden { display: none !important; }
@@ -208,19 +260,33 @@
   </div>
 </div>
 
-<header>
-  <h1>Campus Maze</h1>
-  <p class="subtitle">Use arrow keys to navigate the administrative maze using the sequence clues.</p>
-  <div id="playerTag" class="hidden">
-    Playing as <strong id="playerName"></strong>
-    <button id="switchBtn">Switch team</button>
-  </div>
-</header>
+<div id="mainContainer">
+  <header>
+    <h1>Campus Maze</h1>
+    <p class="subtitle">Use arrow keys to navigate the administrative maze using the sequence clues.</p>
+    <div id="playerTag" class="hidden">
+      Playing as <strong id="playerName"></strong>
+      <button id="switchBtn">Switch team</button>
+    </div>
+  </header>
 
-<div id="clue"><b>Loading clue…</b></div>
-<div id="status"></div>
-<div id="boardWrap">
-  <canvas id="cv" width="950" height="650"></canvas>
+  <div id="clue"><b>Loading clue…</b></div>
+  <div id="status"></div>
+  <div id="boardWrap">
+    <canvas id="cv" width="1050" height="700"></canvas>
+  </div>
+</div>
+
+<div id="successView" class="hidden">
+  <div class="success-card">
+    <div style="font-size: 3rem; margin-bottom: 10px;">💡</div>
+    <h1>Congrats, you have changed a light bulb!</h1>
+    <p class="bulb-msg">Too bad the new bulb does not work :(</p>
+    <div class="key-box">
+      <span>Key to next clue is:</span>
+      <strong style="color: var(--accent);">there is no golden rule 🍁</strong>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -242,40 +308,42 @@ const ctx = canvas.getContext("2d");
 const clueBox = document.getElementById("clue");
 const statusBox = document.getElementById("status");
 const overlay = document.getElementById("overlay");
+const mainContainer = document.getElementById("mainContainer");
+const successView = document.getElementById("successView");
 const playerTag = document.getElementById("playerTag");
 const playerNameEl = document.getElementById("playerName");
 
-const start = { x: 40, y: 310 };
+const start = { x: 40, y: 350 };
 const player = { x: start.x, y: start.y };
 
-// Scrambled non-linear Grid Layout
+// Expanded Spaced-out Grid (1050x700 Canvas)
 const allBodies = [
-  // Row 1 (y = 120)
-  { name: "Executive\nCouncil", x: 110, y: 120 },
-  { name: "Finance\nCouncil", x: 290, y: 120 },
-  { name: "Dean's Council", x: 475, y: 120 },      // Step 7
-  { name: "SJA", x: 660, y: 120 },                 // Step 5
-  { name: "Registrar", x: 840, y: 120 },           // Step 3
+  // Row 1 (y = 130)
+  { name: "Executive\nCouncil", x: 120, y: 130 },
+  { name: "Finance\nCouncil", x: 320, y: 130 },
+  { name: "Dean's Council", x: 525, y: 130 },      // Step 7
+  { name: "SJA", x: 730, y: 130 },                 // Step 5
+  { name: "Registrar", x: 930, y: 130 },           // Step 3
 
-  // Row 2 (y = 310)
-  { name: "Curriculum\nCommittee", x: 110, y: 310 },
-  { name: "Equivalence\nCommittee", x: 290, y: 310 },// Step 4
-  { name: "Result Moderation\nCommittee", x: 475, y: 310 },
-  { name: "Vice-Chancellor", x: 660, y: 310 },     // Step 6
-  { name: "Question Paper\nModeration Committee", x: 840, y: 310 },
+  // Row 2 (y = 350)
+  { name: "Curriculum\nCommittee", x: 120, y: 350 },
+  { name: "Equivalence\nCommittee", x: 320, y: 350 },// Step 4
+  { name: "Result Moderation\nCommittee", x: 525, y: 350 },
+  { name: "Vice-Chancellor", x: 730, y: 350 },     // Step 6
+  { name: "Question Paper\nModeration Committee", x: 930, y: 350 },
 
-  // Row 3 (y = 500)
-  { name: "Curriculum\nReview Board", x: 110, y: 500 },
-  { name: "Writ Petition to\nCalcutta High Court", x: 290, y: 500 },
-  { name: "Academic\nCouncil", x: 475, y: 500 },  // Step 2
-  { name: "Campus Group", x: 660, y: 500 },
-  { name: "Undergraduate\nCouncil", x: 840, y: 500 } // Step 1
+  // Row 3 (y = 570)
+  { name: "Curriculum\nReview Board", x: 120, y: 570 },
+  { name: "Writ Petition to\nCalcutta High Court", x: 320, y: 570 },
+  { name: "Academic\nCouncil", x: 525, y: 570 },  // Step 2
+  { name: "Campus Group", x: 730, y: 570 },
+  { name: "Undergraduate\nCouncil", x: 930, y: 570 } // Step 1
 ];
 
 // Sisyphean Special Grid Layout (VC and Dean's Council far apart)
 const sisypheanBodies = [
-  { name: "Vice-Chancellor", x: 200, y: 310 },
-  { name: "Dean's Council", x: 750, y: 310 }
+  { name: "Vice-Chancellor", x: 230, y: 350 },
+  { name: "Dean's Council", x: 820, y: 350 }
 ];
 
 let playerId = "";
@@ -292,41 +360,43 @@ function wrap(text, x, y) {
   lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineGap));
 }
 
+// Switches to VC + Dean's Council screen ONLY after Dean's Council is reached (currentProgress >= 7)
 function getActiveBodies() {
-  return (currentProgress >= 6 && !finished) ? sisypheanBodies : allBodies;
+  return (currentProgress >= 7 && !finished) ? sisypheanBodies : allBodies;
 }
 
 function draw() {
-  ctx.clearRect(0, 0, 950, 650);
+  if (finished) return;
+  ctx.clearRect(0, 0, 1050, 700);
   const activeList = getActiveBodies();
 
   // Draw Web Connectors
   ctx.strokeStyle = "#232832";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  if (currentProgress >= 6 && !finished) {
-    ctx.moveTo(200, 310);
-    ctx.lineTo(750, 310);
+  if (currentProgress >= 7 && !finished) {
+    ctx.moveTo(230, 350);
+    ctx.lineTo(820, 350);
   } else {
-    // Horizontal maze lines
-    ctx.moveTo(110, 120); ctx.lineTo(840, 120);
-    ctx.moveTo(110, 310); ctx.lineTo(840, 310);
-    ctx.moveTo(110, 500); ctx.lineTo(840, 500);
-    // Vertical maze lines
-    ctx.moveTo(110, 120); ctx.lineTo(110, 500);
-    ctx.moveTo(475, 120); ctx.lineTo(475, 500);
-    ctx.moveTo(840, 120); ctx.lineTo(840, 500);
-    // Diagonal cross lines to make navigation feel complex
-    ctx.moveTo(290, 120); ctx.lineTo(660, 500);
-    ctx.moveTo(660, 120); ctx.lineTo(290, 500);
+    // Horizontal lines
+    ctx.moveTo(120, 130); ctx.lineTo(930, 130);
+    ctx.moveTo(120, 350); ctx.lineTo(930, 350);
+    ctx.moveTo(120, 570); ctx.lineTo(930, 570);
+    // Vertical lines
+    ctx.moveTo(120, 130); ctx.lineTo(120, 570);
+    ctx.moveTo(525, 130); ctx.lineTo(525, 570);
+    ctx.moveTo(930, 130); ctx.lineTo(930, 570);
+    // Diagonals
+    ctx.moveTo(320, 130); ctx.lineTo(730, 570);
+    ctx.moveTo(730, 130); ctx.lineTo(320, 570);
   }
   ctx.stroke();
 
   // Render Boxes
   activeList.forEach(b => {
     const cleanName = b.name.replace(/\n/g, " ");
-    const boxW = 145;
-    const boxH = 65;
+    const boxW = 150;
+    const boxH = 70;
 
     const isCompleted = completed.includes(cleanName);
     ctx.fillStyle = isCompleted ? "#2ecc71" : "#1a1e26";
@@ -343,10 +413,8 @@ function draw() {
   });
 
   // Render "Confused Noojie" Purple Avatar
-  const pr = 13; // Avatar radius
+  const pr = 13;
   ctx.save();
-  
-  // Soft purple glow around noojie
   ctx.shadowColor = "#d6a2e8";
   ctx.shadowBlur = 10;
 
@@ -361,33 +429,25 @@ function draw() {
   ctx.stroke();
   ctx.restore();
 
-  // Confused face expressions on Noojie
+  // Face details
   ctx.strokeStyle = "#ffffff";
   ctx.lineWidth = 1.5;
 
-  // Left Eye ('X')
+  // Eyes ('X')
   ctx.beginPath();
-  ctx.moveTo(player.x - 6, player.y - 4);
-  ctx.lineTo(player.x - 2, player.y);
-  ctx.moveTo(player.x - 2, player.y - 4);
-  ctx.lineTo(player.x - 6, player.y);
+  ctx.moveTo(player.x - 6, player.y - 4); ctx.lineTo(player.x - 2, player.y);
+  ctx.moveTo(player.x - 2, player.y - 4); ctx.lineTo(player.x - 6, player.y);
+  ctx.moveTo(player.x + 2, player.y - 4); ctx.lineTo(player.x + 6, player.y);
+  ctx.moveTo(player.x + 6, player.y - 4); ctx.lineTo(player.x + 2, player.y);
   ctx.stroke();
 
-  // Right Eye ('X')
-  ctx.beginPath();
-  ctx.moveTo(player.x + 2, player.y - 4);
-  ctx.lineTo(player.x + 6, player.y);
-  ctx.moveTo(player.x + 6, player.y - 4);
-  ctx.lineTo(player.x + 2, player.y);
-  ctx.stroke();
-
-  // Squiggly Confused Mouth
+  // Mouth
   ctx.beginPath();
   ctx.moveTo(player.x - 5, player.y + 4);
   ctx.quadraticCurveTo(player.x, player.y + 7, player.x + 5, player.y + 4);
   ctx.stroke();
 
-  // Small floating Title above avatar
+  // Title
   ctx.fillStyle = "#d6a2e8";
   ctx.font = "italic bold 12px 'EB Garamond', Garamond, serif";
   ctx.textAlign = "center";
@@ -401,11 +461,16 @@ function setStatus(msg, kind) {
 
 function updateClueDisplay() {
   if (finished) {
-    clueBox.innerHTML = "Congrats you have changed a light bulb! Too bad the new bulb does not work :(<br><br><b>Key to next clue is:</b> there is no golden rule 🍁";
-  } else if (currentProgress >= 6) {
-    clueBox.innerHTML = CLUES[6];
-  } else if (currentProgress >= 0 && currentProgress < CLUES.length) {
-    clueBox.innerHTML = CLUES[currentProgress];
+    mainContainer.classList.add("hidden");
+    successView.classList.remove("hidden");
+  } else {
+    mainContainer.classList.remove("hidden");
+    successView.classList.add("hidden");
+    if (currentProgress >= 6) {
+      clueBox.innerHTML = CLUES[6];
+    } else if (currentProgress >= 0 && currentProgress < CLUES.length) {
+      clueBox.innerHTML = CLUES[currentProgress];
+    }
   }
 }
 
@@ -473,8 +538,8 @@ async function checkTouch(bodyName) {
 function checkOverlap() {
   let touching = null;
   const activeList = getActiveBodies();
-  const boxW = 145;
-  const boxH = 65;
+  const boxW = 150;
+  const boxH = 70;
 
   for (const b of activeList) {
     if (Math.abs(player.x - b.x) < boxW/2 && Math.abs(player.y - b.y) < boxH/2) {
@@ -485,7 +550,7 @@ function checkOverlap() {
 
   const cleanTouching = touching ? touching.replace(/\n/g, " ") : null;
   if (touching && cleanTouching !== lastTouched) {
-    if (currentProgress < 6) {
+    if (currentProgress < 7) {
       if (!completed.includes(cleanTouching)) {
         lastTouched = cleanTouching;
         checkTouch(touching);
@@ -505,8 +570,8 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowDown") player.y += s;
   if (e.key === "ArrowLeft") player.x -= s;
   if (e.key === "ArrowRight") player.x += s;
-  player.x = Math.max(10, Math.min(940, player.x));
-  player.y = Math.max(10, Math.min(640, player.y));
+  player.x = Math.max(10, Math.min(1040, player.x));
+  player.y = Math.max(10, Math.min(690, player.y));
   draw();
   checkOverlap();
 });
@@ -531,10 +596,11 @@ document.getElementById("switchBtn").addEventListener("click", () => {
   playerTag.classList.add("hidden");
   document.getElementById("nameInput").value = "";
   overlay.classList.remove("hidden");
+  mainContainer.classList.remove("hidden");
+  successView.classList.add("hidden");
   draw();
 });
 
-// Re-draw canvas once Google Font loads
 document.fonts.ready.then(() => draw());
 draw();
 </script>
