@@ -3,125 +3,193 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NUJS Lightbulb Conundrum</title>
+<title>Campus Maze</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+
   :root {
-    --bg: #14171c;
-    --panel: #1e232b;
-    --line: #3a4048;
-    --text: #eef1f4;
-    --muted: #9aa4b0;
-    --accent: #4fc3ff;
+    --bg: #12151a;
+    --panel: #1a1e26;
+    --line: #323845;
+    --text: #f0f3f7;
+    --muted: #a0aab8;
+    --accent: #e2b857;
     --good: #2ecc71;
     --bad: #e74c3c;
   }
+
   * { box-sizing: border-box; }
+
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: Garamond, "EB Garamond", Georgia, serif;
+    font-family: 'EB Garamond', Garamond, Georgia, serif;
+    -webkit-font-smoothing: antialiased;
   }
+
   header {
-    padding: 18px 16px 8px;
+    padding: 18px 16px 6px;
     text-align: center;
-    max-width: 800px;
+    max-width: 850px;
     margin: 0 auto;
   }
-  header h1 { margin: 0 0 6px; font-size: 1.8rem; letter-spacing: 0.5px; }
-  header p.story { 
-    margin: 0 0 8px; 
-    color: var(--muted); 
-    font-size: 1.05rem; 
-    line-height: 1.4;
+
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--accent);
   }
+
+  header p.subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+    font-style: italic;
+  }
+
   #playerTag {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 6px;
-    font-size: 0.95rem;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 1.05rem;
     color: var(--muted);
   }
+
   #playerTag button {
     background: none;
     border: 1px solid var(--line);
     color: var(--muted);
     border-radius: 6px;
-    padding: 3px 8px;
+    padding: 3px 10px;
     cursor: pointer;
-    font-family: Garamond, serif;
-    font-size: 0.85rem;
+    font-family: 'EB Garamond', Garamond, serif;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
   }
-  #playerTag button:hover { border-color: var(--accent); color: var(--accent); }
+
+  #playerTag button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
   #clue {
-    margin: 10px auto;
-    width: min(92%, 750px);
-    min-height: 75px;
-    border: 1px dashed var(--line);
+    margin: 12px auto;
+    width: min(92%, 820px);
+    min-height: 90px;
+    border: 1px solid var(--line);
     border-radius: 8px;
     background: var(--panel);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 18px;
-    font-size: 1.05rem;
-    line-height: 1.4;
+    padding: 14px 20px;
+    font-size: 1.15rem;
+    line-height: 1.5;
     text-align: center;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
   }
-  #status { text-align: center; min-height: 22px; font-size: 1rem; margin-bottom: 6px; }
+
+  #status {
+    text-align: center;
+    min-height: 24px;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+  }
+
   #status.ok { color: var(--good); }
   #status.err { color: var(--bad); }
-  #boardWrap { display: flex; justify-content: center; }
+
+  #boardWrap {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 20px;
+  }
+
   canvas {
-    background: #0e1015;
-    border: 3px solid var(--line);
+    background: #0b0d10;
+    border: 2px solid var(--line);
     border-radius: 10px;
     max-width: 95vw;
     height: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   }
+
   #overlay {
     position: fixed;
     inset: 0;
-    background: rgba(10, 12, 15, 0.94);
+    background: rgba(8, 10, 13, 0.96);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
   }
+
   #overlay .card {
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 12px;
-    padding: 28px 26px;
-    width: min(90%, 420px);
+    padding: 32px 28px;
+    width: min(90%, 480px);
     text-align: center;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.7);
   }
-  #overlay h2 { margin-top: 0; font-size: 1.6rem; }
-  #overlay p { color: var(--muted); font-size: 1rem; line-height: 1.4; }
+
+  #overlay h2 {
+    margin-top: 0;
+    font-size: 2rem;
+    color: var(--accent);
+  }
+
+  #overlay .prompt-box {
+    text-align: left;
+    background: #11141a;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
   #overlay input {
     width: 100%;
-    padding: 10px 12px;
+    padding: 10px 14px;
     border-radius: 8px;
     border: 1px solid var(--line);
-    background: #10131a;
+    background: #11141a;
     color: var(--text);
-    font-size: 1rem;
-    font-family: Garamond, serif;
-    margin: 14px 0;
+    font-size: 1.1rem;
+    font-family: 'EB Garamond', Garamond, serif;
+    margin-bottom: 16px;
   }
+
+  #overlay input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
   #overlay button.primary {
     width: 100%;
-    padding: 10px 12px;
+    padding: 11px 14px;
     border-radius: 8px;
     border: none;
     background: var(--accent);
-    color: #04141d;
-    font-size: 1.1rem;
-    font-weight: 600;
-    font-family: Garamond, serif;
+    color: #12151a;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'EB Garamond', Garamond, serif;
     cursor: pointer;
+    transition: opacity 0.2s ease;
   }
+
+  #overlay button.primary:hover {
+    opacity: 0.9;
+  }
+
   .hidden { display: none !important; }
 </style>
 </head>
@@ -129,16 +197,20 @@
 
 <div id="overlay">
   <div class="card">
-    <h2>Enter Team Name</h2>
-    <p>How many committees does it take in NUJS to change a light bulb? Follow the average Noojie trying to solve a simple non-working light bulb grievance. Use the clues to navigate the administrative maze!</p>
+    <h2>Campus Maze</h2>
+    <div class="prompt-box">
+      <b>Q:</b> How many committees does it take to change a light bulb in NUJS?<br>
+      <b>Ans:</b> On 5/5/23, a committee attempted to decide and regulate.
+    </div>
+    <p style="color: var(--muted); font-size: 1.05rem;">Enter team code to begin or resume progress:</p>
     <input id="nameInput" type="text" placeholder="e.g. Team Falcon" maxlength="40" autocomplete="off">
-    <button class="primary" id="startBtn">Begin Journey</button>
+    <button class="primary" id="startBtn">Enter Maze</button>
   </div>
 </div>
 
 <header>
-  <h1>The NUJS Lightbulb Conundrum</h1>
-  <p class="story">How many committees does it take in NUJS to change a light bulb? Follow an average Noojie trying to solve a light bulb grievance through the average administrative journey. Use the clues to find the correct set of steps!</p>
+  <h1>Campus Maze</h1>
+  <p class="subtitle">Use arrow keys to navigate the administrative maze using the sequence clues.</p>
   <div id="playerTag" class="hidden">
     Playing as <strong id="playerName"></strong>
     <button id="switchBtn">Switch team</button>
@@ -148,24 +220,21 @@
 <div id="clue"><b>Loading clue…</b></div>
 <div id="status"></div>
 <div id="boardWrap">
-  <canvas id="cv" width="950" height="600"></canvas>
+  <canvas id="cv" width="950" height="650"></canvas>
 </div>
 
 <script>
-// Supabase Credentials
 const SUPABASE_URL = "https://yrjiuskkrfhhzyxsfkah.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlyaml1c2trcmZoaHp5eHNma2FoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4ODYyOTMsImV4cCI6MjEwMjQ2MjI5M30.1uj0dBwSwYMvE3s3HdFJmxUAn2-Z9R-h2f8x0cuABsE";
 
-// 3-Line Placeholder Clues for each of the 8 steps
 const CLUES = [
-  "<b>Clue 1:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 2:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 3:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 4:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 5:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 6:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 7:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here.",
-  "<b>Clue 8:</b><br>First line of clue placeholder text goes here.<br>Second line of clue placeholder text goes here.<br>Third line of clue placeholder text goes here."
+  "<b>Clue 1:</b><br>Two days for the messenger to carry your plea,<br>Seven days before the Council can disagree,<br>Fourteen till they finally answer thee,<br>But before beginning, there must be three,<br>A simple vote may set you free,<br>Five days later, in writing, you shall see.",
+  "<b>Clue 2:</b><br>At the eleventh hour, two courses appear,<br>One must be taken, the other may be one you desire,<br>Yet before you go down either, the Council must agree,<br>In times of moderation or emergency, they play referee.",
+  "<b>Clue 3:</b><br>A king does not always sit on the throne.",
+  "<b>Clue 4:</b><br>Sabhi SWAYAM, Sabhi samaan.",
+  "<b>Clue 5:</b><br>They may ask for four to be exempt, so you can compete,<br>A day without their mention would be a very rare feat.",
+  "<b>Clue 6:</b><br>Seventy or sixty-five, we all wait anxiously,<br>But alas, there is one attendance percentage we never see.",
+  "<b>Clue 7 (The Sisyphean Run):</b><br>The Sisyphean run from pillar to post,<br>Every time the end is near, it fades to an “almost”,<br>Seven circles through the maze, the same two always appear,<br>From one to the other, seven times, yet no answer draws near."
 ];
 
 const canvas = document.getElementById("cv");
@@ -176,36 +245,43 @@ const overlay = document.getElementById("overlay");
 const playerTag = document.getElementById("playerTag");
 const playerNameEl = document.getElementById("playerName");
 
-const start = { x: 40, y: 280 };
-const player = { x: start.x, y: start.y, r: 10 };
+const start = { x: 40, y: 310 };
+const player = { x: start.x, y: start.y };
 
-// 13 Blocks total (8 sequence steps + 5 red herrings)
-const bodies = [
+// Full Grid Layout (15 Bodies total)
+const allBodies = [
   // Row 1
-  { name: "SJA", x: 130, y: 90 },
-  { name: "Executive Council", x: 360, y: 90 },
-  { name: "Dean's Council", x: 590, y: 90 },
-  { name: "VC", x: 820, y: 90 },
-  
+  { name: "Undergraduate\nCouncil", x: 110, y: 110 },
+  { name: "Academic\nCouncil", x: 290, y: 110 },
+  { name: "Registrar", x: 475, y: 110 },
+  { name: "Equivalence\nCommittee", x: 660, y: 110 },
+  { name: "SJA", x: 840, y: 110 },
+
   // Row 2
-  { name: "Registrar", x: 130, y: 230 },
-  { name: "Finance Council", x: 360, y: 230 },
-  { name: "Academic Section", x: 590, y: 230 },
-  { name: "Academic Council", x: 820, y: 230 },
+  { name: "Vice-Chancellor", x: 110, y: 270 },
+  { name: "Dean's Council", x: 290, y: 270 },
+  { name: "Executive\nCouncil", x: 475, y: 270 },
+  { name: "Finance\nCouncil", x: 660, y: 270 },
+  { name: "Curriculum\nReview Board", x: 840, y: 270 },
 
   // Row 3
-  { name: "Exam Section", x: 130, y: 370 },
-  { name: "Student Grievance\nRedressal Committee", x: 360, y: 370 },
-  { name: "Undergraduate Council", x: 590, y: 370 },
-  { name: "Writ Petition to\nCalcutta High Court", x: 820, y: 370 },
+  { name: "Curriculum\nCommittee", x: 110, y: 430 },
+  { name: "Question Paper\nModeration Committee", x: 290, y: 430 },
+  { name: "Result Moderation\nCommittee", x: 475, y: 430 },
+  { name: "Writ Petition to\nCalcutta High Court", x: 660, y: 430 },
+  { name: "Campus Group", x: 840, y: 430 }
+];
 
-  // Row 4 (Center Red Herring)
-  { name: "Campus Group", x: 475, y: 510 }
+// Sisyphean Special Grid Layout (VC and Dean's Council only)
+const sisypheanBodies = [
+  { name: "Vice-Chancellor", x: 280, y: 310 },
+  { name: "Dean's Council", x: 670, y: 310 }
 ];
 
 let playerId = "";
 let completed = [];
 let finished = false;
+let currentProgress = 0;
 let busy = false;
 let lastTouched = null;
 
@@ -216,42 +292,52 @@ function wrap(text, x, y) {
   lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineGap));
 }
 
-function draw() {
-  ctx.clearRect(0, 0, 950, 600);
+function getActiveBodies() {
+  return (currentProgress >= 6 && !finished) ? sisypheanBodies : allBodies;
+}
 
-  // Grid Lines
+function draw() {
+  ctx.clearRect(0, 0, 950, 650);
+  const activeList = getActiveBodies();
+
+  // Connectors
   ctx.strokeStyle = "#252b33";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.moveTo(130, 90); ctx.lineTo(820, 90);
-  ctx.moveTo(130, 230); ctx.lineTo(820, 230);
-  ctx.moveTo(130, 370); ctx.lineTo(820, 370);
-  ctx.moveTo(130, 90); ctx.lineTo(130, 370);
-  ctx.moveTo(820, 90); ctx.lineTo(820, 370);
-  ctx.moveTo(475, 370); ctx.lineTo(475, 510);
+  if (currentProgress >= 6 && !finished) {
+    ctx.moveTo(280, 310);
+    ctx.lineTo(670, 310);
+  } else {
+    ctx.moveTo(110, 110); ctx.lineTo(840, 110);
+    ctx.moveTo(110, 270); ctx.lineTo(840, 270);
+    ctx.moveTo(110, 430); ctx.lineTo(840, 430);
+    ctx.moveTo(110, 110); ctx.lineTo(110, 430);
+    ctx.moveTo(840, 110); ctx.lineTo(840, 430);
+  }
   ctx.stroke();
 
-  // Render locations
-  bodies.forEach(b => {
+  // Render Boxes
+  activeList.forEach(b => {
     const cleanName = b.name.replace(/\n/g, " ");
-    const boxW = 150;
+    const boxW = 145;
     const boxH = 65;
 
-    ctx.fillStyle = completed.includes(cleanName) ? "#2ecc71" : "#282e38";
+    const isCompleted = completed.includes(cleanName);
+    ctx.fillStyle = isCompleted ? "#2ecc71" : "#1a1e26";
     ctx.fillRect(b.x - boxW/2, b.y - boxH/2, boxW, boxH);
-    ctx.strokeStyle = completed.includes(cleanName) ? "#27ae60" : "#454c56";
+    ctx.strokeStyle = isCompleted ? "#27ae60" : "#3e4654";
     ctx.lineWidth = 2;
     ctx.strokeRect(b.x - boxW/2, b.y - boxH/2, boxW, boxH);
 
     ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 13px Garamond, serif";
+    ctx.font = "bold 14px 'EB Garamond', Garamond, serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     wrap(b.name, b.x, b.y);
   });
 
-  // Render player dot
-  ctx.fillStyle = "#4fc3ff";
+  // Render Player Dot
+  ctx.fillStyle = "#e2b857";
   ctx.beginPath();
   ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
   ctx.fill();
@@ -265,13 +351,13 @@ function setStatus(msg, kind) {
   statusBox.className = kind || "";
 }
 
-function updateClueDisplay(prog) {
+function updateClueDisplay() {
   if (finished) {
-    clueBox.innerHTML = "<b>Sorry, you've graduated without a convocation and not having been able to have changed the light bulb.</b>";
-  } else if (prog >= 0 && prog < CLUES.length) {
-    clueBox.innerHTML = CLUES[prog];
-  } else {
-    clueBox.innerHTML = "<b>Use arrow keys to visit the locations in the correct sequence.</b>";
+    clueBox.innerHTML = "Congrats you have changed a light bulb! Too bad the new bulb does not work :(<br><br><b>Key to next clue is:</b> there is no golden rule 🍁";
+  } else if (currentProgress >= 6) {
+    clueBox.innerHTML = CLUES[6];
+  } else if (currentProgress >= 0 && currentProgress < CLUES.length) {
+    clueBox.innerHTML = CLUES[currentProgress];
   }
 }
 
@@ -294,7 +380,8 @@ async function loadState() {
     const data = await callDatabase("get_state", { p_id: playerId });
     completed = data.completed || [];
     finished = !!data.finished;
-    updateClueDisplay(data.progress || 0);
+    currentProgress = data.progress || 0;
+    updateClueDisplay();
     draw();
   } catch (err) {
     setStatus("Could not reach database. Check API credentials.", "err");
@@ -311,19 +398,21 @@ async function checkTouch(bodyName) {
     const data = await callDatabase("check_touch", { p_id: playerId, b_name: cleanBodyName });
     if (data.status === "correct") {
       completed.push(cleanBodyName);
-      setStatus("Correct step — keep following the clues.", "ok");
-      updateClueDisplay(data.progress);
+      currentProgress = data.progress;
+      setStatus("Correct step — keep following the sequence.", "ok");
+      updateClueDisplay();
     } else if (data.status === "finished") {
       completed.push(cleanBodyName);
       finished = true;
-      setStatus("Maze completed!", "ok");
-      updateClueDisplay(8);
+      setStatus("Maze complete!", "ok");
+      updateClueDisplay();
     } else if (data.status === "wrong") {
       completed = [];
+      currentProgress = 0;
       player.x = start.x;
       player.y = start.y;
       setStatus("Wrong stop! Redirection reset — back to the start.", "err");
-      updateClueDisplay(0);
+      updateClueDisplay();
     }
     draw();
   } catch (err) {
@@ -335,18 +424,28 @@ async function checkTouch(bodyName) {
 
 function checkOverlap() {
   let touching = null;
-  const boxW = 150;
+  const activeList = getActiveBodies();
+  const boxW = 145;
   const boxH = 65;
-  for (const b of bodies) {
+
+  for (const b of activeList) {
     if (Math.abs(player.x - b.x) < boxW/2 && Math.abs(player.y - b.y) < boxH/2) {
       touching = b.name;
       break;
     }
   }
+
   const cleanTouching = touching ? touching.replace(/\n/g, " ") : null;
-  if (touching && cleanTouching !== lastTouched && !completed.includes(cleanTouching)) {
-    lastTouched = cleanTouching;
-    checkTouch(touching);
+  if (touching && cleanTouching !== lastTouched) {
+    if (currentProgress < 6) {
+      if (!completed.includes(cleanTouching)) {
+        lastTouched = cleanTouching;
+        checkTouch(touching);
+      }
+    } else {
+      lastTouched = cleanTouching;
+      checkTouch(touching);
+    }
   }
   if (!touching) lastTouched = null;
 }
@@ -359,7 +458,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "ArrowLeft") player.x -= s;
   if (e.key === "ArrowRight") player.x += s;
   player.x = Math.max(10, Math.min(940, player.x));
-  player.y = Math.max(10, Math.min(590, player.y));
+  player.y = Math.max(10, Math.min(640, player.y));
   draw();
   checkOverlap();
 });
@@ -378,6 +477,7 @@ document.getElementById("switchBtn").addEventListener("click", () => {
   playerId = "";
   completed = [];
   finished = false;
+  currentProgress = 0;
   player.x = start.x;
   player.y = start.y;
   playerTag.classList.add("hidden");
@@ -386,6 +486,8 @@ document.getElementById("switchBtn").addEventListener("click", () => {
   draw();
 });
 
+// Re-draw canvas once Google Font loads
+document.fonts.ready.then(() => draw());
 draw();
 </script>
 </body>
