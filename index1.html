@@ -251,10 +251,10 @@
     <h2>Campus Maze</h2>
     <div class="prompt-box">
       <b>Q:</b> How many committees does it take to change a light bulb in NUJS?<br>
-      <b>Ans:</b> On 5/5/23, a committee attempted to decide and regulate.
+      <b>Ans:</b> the academic council's regulations on 5/5/2023 decided the answer to that question
     </div>
-    <p style="color: var(--muted); font-size: 1.1rem;">Enter team code to begin or resume progress:</p>
-    <input id="nameInput" type="text" placeholder="e.g. cc183" maxlength="40" autocomplete="off">
+    <p style="color: var(--muted); font-size: 1.1rem;">Enter team name to begin or resume progress:</p>
+    <input id="nameInput" type="text" placeholder="e.g. Team Alpha" maxlength="40" autocomplete="off">
     <button class="primary" id="startBtn">Enter Maze</button>
   </div>
 </div>
@@ -283,7 +283,7 @@
     <p class="bulb-msg">Too bad the new bulb does not work :(</p>
     <div class="key-box">
       <span>Key to next puzzle:</span>
-      <strong style="color: var(--accent);">there is no golden rule 🍁</strong>
+      <strong style="color: var(--accent);">answer to next puzzle is the last committee</strong>
     </div>
   </div>
 </div>
@@ -485,9 +485,6 @@ async function triggerFrontend30MinReset(timerKey) {
   player.y = start.y;
   localStorage.setItem(timerKey, Date.now().toString());
 
-  // Intentionally sends a non-existent node name to Supabase.
-  // The backend check_touch procedure evaluates this invalid move as 'wrong',
-  // automatically resetting team progress to 0 on Supabase without DB function changes.
   try {
     await callDatabase("check_touch", { p_id: playerId, b_name: "__30MIN_TIMER_RESET_TRIGGER__" });
   } catch (err) {
